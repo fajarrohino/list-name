@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Input Data</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h2>Input list undangan</h2>
+
+    <form id="myForm">
+      <div>
+        <label>Name</label><br />
+        <input type="text" id="name" required />
+      </div>
+
+      <br />
+
+      <div>
+        <select id="category" required>
+          <option value="">Loading...</option>
+        </select>
+      </div>
+
+      <br />
+
+      <div>
+        <label>Created By</label><br />
+        <input type="text" id="createdBy" value="sayang" />
+      </div>
+
+      <br />
+
+      <button type="submit">Save</button>
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+      document
+        .getElementById("myForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData();
+
+          formData.append("name", document.getElementById("name").value);
+          formData.append(
+            "category",
+            document.getElementById("category").value,
+          );
+          formData.append(
+            "createdBy",
+            document.getElementById("createdBy").value,
+          );
+
+          fetch(
+            "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+            {
+              method: "POST",
+              body: formData,
+            },
+          )
+            .then((res) => res.text())
+            .then((data) => {
+              console.log(data);
+              document.getElementById("message").innerHTML =
+                "Data berhasil disimpan";
+              document.getElementById("myForm").reset();
+            })
+            .catch((err) => {
+              console.error(err);
+              document.getElementById("message").innerHTML =
+                "Gagal menyimpan data";
+            });
+        });
+
+      window.onload = function () {
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const ddl = document.getElementById("category");
+
+            ddl.innerHTML = '<option value="">Pilih Category</option>';
+
+            data.forEach((category) => {
+              const option = document.createElement("option");
+
+              option.value = category;
+              option.textContent = category;
+
+              ddl.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Gagal load category:", error);
+          });
+      };
+    </script>
+  </body>
+</html>
