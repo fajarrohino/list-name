@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Daftar Undangan</title>
+  </head>
+  <body>
+    <h2>Daftar Undangan</h2>
+
+    <label>Category</label>
+    <select id="categoryFilter">
+      <option value="">Semua</option>
+    </select>
+
+    <br /><br />
+    <a href="\index.html">
+      <button type="button">Input list undangan</button>
+    </a>
+
+    <br /><br />
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody id="tblData"></tbody>
+    </table>
+
+    <script>
+      let allData = [];
+
+      fetch(
+        "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=name",
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          allData = data;
+
+          loadCategory(data);
+          renderTable(data);
+        });
+
+      function loadCategory(data) {
+        const ddl = document.getElementById("categoryFilter");
+
+        const categories = [...new Set(data.map((x) => x.category))];
+
+        categories.sort();
+
+        categories.forEach((cat) => {
+          ddl.innerHTML += `<option value="${cat}">
+                ${cat}
+             </option>`;
+        });
+      }
+
+      function renderTable(data) {
+        let html = "";
+
+        data.forEach((item) => {
+          html += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.category}</td>
+            </tr>
+        `;
+        });
+
+        document.getElementById("tblData").innerHTML = html;
+      }
+
+      document
+        .getElementById("categoryFilter")
+        .addEventListener("change", function () {
+          const category = this.value;
+
+          if (category === "") {
+            renderTable(allData);
+            return;
+          }
+
+          const filtered = allData.filter((x) => x.category === category);
+
+          renderTable(filtered);
+        });
+    </script>
+  </body>
+</html>
