@@ -16,6 +16,13 @@
       <br />
 
       <div>
+        <label>No WhatsApp</label><br />
+        <input type="text" id="no_wa" required />
+      </div>
+
+      <br />
+
+      <div>
         <select id="category" required>
           <option value="">Loading...</option>
         </select>
@@ -46,6 +53,8 @@
           const formData = new FormData();
 
           formData.append("name", document.getElementById("name").value);
+          formData.append("no_wa", document.getElementById("no_wa").value);
+          formData.append("is_wa", 0);
           formData.append(
             "category",
             document.getElementById("category").value,
