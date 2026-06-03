@@ -112,29 +112,52 @@
       function sendWa(index) {
         const person = currentData[index];
 
-        const message = `
-      ${messageTemplate.greeting}
-      Bismillahirrahmanirrahim.
+        //   const message = `
+        //   ${messageTemplate.greeting}
+        //   Bismillahirrahmanirrahim.
 
-      Kepada Yth.
-      Bapak/Ibu/Saudara/i
-      ${person.name}
+        //   Kepada Yth.
+        //   Bapak/Ibu/Saudara/i
+        //   ${person.name}
 
-      ${messageTemplate.opening}
+        //   ${messageTemplate.opening}
 
-      ${messageTemplate.from}
+        //   ${messageTemplate.from}
 
-      ${messageTemplate.detail}
-      ${messageTemplate.link}
+        //   ${messageTemplate.detail}
+        //   ${messageTemplate.link}
 
-      ${messageTemplate.hope}
+        //   ${messageTemplate.hope}
 
-      ${messageTemplate.closing}
-      Wassalamualaikum warahmatullahi wabarakatuh.
+        //   ${messageTemplate.closing}
+        //   Wassalamualaikum warahmatullahi wabarakatuh.
 
-      ${messageTemplate.best_regards}
-      ${messageTemplate.from} 
-      `;
+        //   ${messageTemplate.best_regards}
+        //   ${messageTemplate.from}
+        // `;
+
+        const message = [
+          messageTemplate.greeting,
+          "Bismillahirrahmanirrahim.",
+          "\n",
+          "Kepada Yth.",
+          "Bapak/Ibu/Saudara/i",
+          person.name,
+          "\n",
+          messageTemplate.opening,
+          messageTemplate.from,
+          "\n",
+          `${messageTemplate.detail}\n${messageTemplate.link}`,
+          "\n",
+          messageTemplate.hope,
+          "\n",
+          messageTemplate.closing,
+          "\n",
+          "Wassalamualaikum warahmatullahi wabarakatuh",
+          "\n",
+          messageTemplate.best_regards,
+          messageTemplate.from,
+        ].join("\n");
 
         const no_whatsapps = person.no_wa.replace(/^0/, "62");
         const url = `https://wa.me/${no_whatsapps}?text=${encodeURIComponent(message)}`;
