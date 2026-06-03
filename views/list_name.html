@@ -2,33 +2,169 @@
 <html>
   <head>
     <title>Daftar Undangan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      select {
+        min-width: 200px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #0d6efd;
+      }
+
+      .btn-success {
+        background: #25d366;
+      }
+
+      .btn-primary:hover {
+        background: #0b5ed7;
+      }
+
+      .btn-success:hover {
+        background: #1faa52;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #0d6efd;
+        color: white;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      tbody tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+
+      tbody tr:hover {
+        background: #eef4ff;
+      }
+
+      .no-wa-empty {
+        color: red;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        select,
+        .btn {
+          width: 100%;
+        }
+
+        th,
+        td {
+          padding: 10px;
+          font-size: 14px;
+        }
+
+        .btn {
+          text-align: center;
+        }
+      }
+    </style>
   </head>
   <body>
-    <h2>Daftar Undangan</h2>
+    <div class="container">
+      <h2>Daftar Undangan</h2>
 
-    <label>Category</label>
-    <select id="categoryFilter">
-      <option value="">Semua</option>
-    </select>
+      <div class="toolbar">
+        <select id="categoryFilter">
+          <option value="">Semua Category</option>
+        </select>
 
-    <br /><br />
-    <a href="../">
-      <button type="button">Input list undangan</button>
-    </a>
+        <a href="../" class="btn btn-primary"> Input List Undangan </a>
+      </div>
 
-    <br /><br />
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Category</th>
+              <th>No WA</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
 
-    <table border="1">
-      <thead>
-        <tr>
-          <th>Nama</th>
-          <th>Category</th>
-          <th>No. Wa</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="tblData"></tbody>
-    </table>
+          <tbody id="tblData"></tbody>
+        </table>
+      </div>
+    </div>
 
     <script>
       let allData = [];
@@ -71,24 +207,27 @@
       }
 
       function renderTable(data) {
-        let html = "";
-
         currentData = data;
-        // console.log("rendertabel: ", currentData);
+
+        let html = "";
 
         data.forEach((item, index) => {
           html += `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.category}</td>
-                <td>${item.no_wa}</td>
-                <td>
-                  <button onclick="sendWa(${index})">
-                    Kirim WA
-                  </button>
-                </td>
-            </tr>
-        `;
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.category}</td>
+                  <td>
+                    ${item.no_wa ? item.no_wa : '<span class="no-wa-empty">Belum Ada</span>'}
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-success"
+                      onclick="sendWa(${index})">
+                      Kirim WA
+                    </button>
+                  </td>
+                </tr>
+              `;
         });
 
         document.getElementById("tblData").innerHTML = html;
@@ -112,29 +251,12 @@
       function sendWa(index) {
         const person = currentData[index];
 
-        //   const message = `
-        //   ${messageTemplate.greeting}
-        //   Bismillahirrahmanirrahim.
+        const check_no_wa = person.no_wa;
 
-        //   Kepada Yth.
-        //   Bapak/Ibu/Saudara/i
-        //   ${person.name}
-
-        //   ${messageTemplate.opening}
-
-        //   ${messageTemplate.from}
-
-        //   ${messageTemplate.detail}
-        //   ${messageTemplate.link}
-
-        //   ${messageTemplate.hope}
-
-        //   ${messageTemplate.closing}
-        //   Wassalamualaikum warahmatullahi wabarakatuh.
-
-        //   ${messageTemplate.best_regards}
-        //   ${messageTemplate.from}
-        // `;
+        if (!check_no_wa || check_no_wa.trim() === "") {
+          alert("No Whatsapp belum terdaftar!");
+          return;
+        }
 
         const message = [
           messageTemplate.greeting,
