@@ -12,7 +12,7 @@
     </select>
 
     <br /><br />
-    <a href="../">
+    <a href="/">
       <button type="button">Input list undangan</button>
     </a>
 
@@ -23,6 +23,8 @@
         <tr>
           <th>Nama</th>
           <th>Category</th>
+          <th>No. Wa</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="tblData"></tbody>
@@ -30,6 +32,8 @@
 
     <script>
       let allData = [];
+
+      let currentData = [];
 
       fetch(
         "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=name",
@@ -39,7 +43,17 @@
           allData = data;
 
           loadCategory(data);
+          // console.log("data: ", data);
           renderTable(data);
+        });
+
+      fetch(
+        "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=message",
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          messageTemplate = data;
+          // console.log("MessageTemplate: ", data);
         });
 
       function loadCategory(data) {
@@ -59,11 +73,20 @@
       function renderTable(data) {
         let html = "";
 
-        data.forEach((item) => {
+        currentData = data;
+        // console.log("rendertabel: ", currentData);
+
+        data.forEach((item, index) => {
           html += `
             <tr>
                 <td>${item.name}</td>
                 <td>${item.category}</td>
+                <td>${item.no_wa}</td>
+                <td>
+                  <button onclick="sendWa(${index})">
+                    Kirim WA
+                  </button>
+                </td>
             </tr>
         `;
         });
@@ -85,6 +108,39 @@
 
           renderTable(filtered);
         });
+
+      function sendWa(index) {
+        const person = currentData[index];
+
+        const message = `
+      ${messageTemplate.greeting}
+      Bismillahirrahmanirrahim.
+
+      Kepada Yth.
+      Bapak/Ibu/Saudara/i
+      ${person.name}
+
+      ${messageTemplate.opening}
+
+      ${messageTemplate.from}
+
+      ${messageTemplate.detail}
+      ${messageTemplate.link}
+
+      ${messageTemplate.hope}
+
+      ${messageTemplate.closing}
+      Wassalamualaikum warahmatullahi wabarakatuh.
+
+      ${messageTemplate.best_regards}
+      ${messageTemplate.from} 
+      `;
+
+        const no_whatsapps = person.no_wa.replace(/^0/, "62");
+        const url = `https://wa.me/${no_whatsapps}?text=${encodeURIComponent(message)}`;
+
+        window.open(url, "_blank");
+      }
     </script>
   </body>
 </html>
