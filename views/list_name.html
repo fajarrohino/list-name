@@ -335,11 +335,12 @@
         </div>
       </div>
     </div>
+
     <!-- loading -->
     <div id="loadingOverlay" class="loading-overlay">
       <div class="loading-box">
         <div class="spinner"></div>
-        <p>Menyimpan data...</p>
+        <p id="loadingText">Memuat data...</p>
       </div>
     </div>
 
@@ -347,24 +348,36 @@
       let allData = [];
       let currentData = [];
 
-      fetch(
-        "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=name",
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          allData = data;
+      loadData();
 
-          loadCategory(data);
-          renderTable(data);
-        });
+      function loadData() {
+        showLoading("Mengambil data...");
 
-      fetch(
-        "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=message",
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          messageTemplate = data;
-        });
+        Promise.all([
+          fetch(
+            "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=name",
+          ).then((res) => res.json()),
+
+          fetch(
+            "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=message",
+          ).then((res) => res.json()),
+        ])
+          .then(([guestData, messageData]) => {
+            allData = guestData;
+            currentData = guestData;
+            messageTemplate = messageData;
+
+            loadCategory(guestData);
+            renderTable(guestData);
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Gagal mengambil data");
+          })
+          .finally(() => {
+            hideLoading();
+          });
+      }
 
       function loadCategory(data) {
         const ddl = document.getElementById("categoryFilter");
@@ -498,7 +511,8 @@
         document.getElementById("editModal").style.display = "none";
       }
 
-      function showLoading() {
+      function showLoading(text = "Loading...") {
+        document.getElementById("loadingText").innerText = text;
         document.getElementById("loadingOverlay").style.display = "flex";
       }
 
