@@ -231,6 +231,51 @@
           min-width: 120px;
         }
       }
+
+      /* loading */
+      .loading-overlay {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+
+        justify-content: center;
+        align-items: center;
+      }
+
+      .loading-box {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        min-width: 220px;
+      }
+
+      .spinner {
+        width: 45px;
+        height: 45px;
+        margin: auto;
+        border: 5px solid #ddd;
+        border-top: 5px solid #25d366;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-box p {
+        margin-top: 15px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -288,6 +333,13 @@
 
           <button class="btn btn-warning" onclick="closeModal()">Batal</button>
         </div>
+      </div>
+    </div>
+    <!-- loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Menyimpan data...</p>
       </div>
     </div>
 
@@ -446,6 +498,14 @@
         document.getElementById("editModal").style.display = "none";
       }
 
+      function showLoading() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+      }
+
+      function hideLoading() {
+        document.getElementById("loadingOverlay").style.display = "none";
+      }
+
       function editData(index) {
         const person = currentData[index];
 
@@ -473,6 +533,7 @@
       }
 
       function saveEdit() {
+        showLoading();
         const formData = new FormData();
 
         formData.append("action", "updateGuest");
@@ -493,8 +554,15 @@
         )
           .then((res) => res.json())
           .then((data) => {
+            hideLoading();
             alert("Data berhasil diupdate");
             location.reload();
+          })
+          .catch((err) => {
+            hideLoading();
+
+            alert("Gagal update data");
+            console.error(err);
           });
       }
     </script>
