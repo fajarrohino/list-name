@@ -152,9 +152,7 @@
 
       <p id="message"></p>
 
-      <a href="views/list_name.html" class="btn-list">
-        Lihat Daftar Undangan
-      </a>
+      <a href="views/list_name.html" class="btn-list"> Daftar Undangan </a>
     </div>
     <script>
       document
@@ -166,7 +164,7 @@
 
           formData.append("name", document.getElementById("name").value);
           formData.append("no_wa", document.getElementById("no_wa").value);
-          formData.append("is_wa", 0);
+          formData.append("status_wa", "0");
           formData.append(
             "category",
             document.getElementById("category").value,
