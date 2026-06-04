@@ -220,11 +220,11 @@
                     ${item.no_wa ? item.no_wa : '<span class="no-wa-empty">Belum Ada</span>'}
                   </td>
                   <td>
-                    <button
-                      class="btn btn-success"
-                      onclick="sendWa(${index})">
-                      Kirim WA
-                    </button>
+                    ${
+                      item.status_wa == 1
+                        ? '<span style="color:green;font-weight:bold">✓ Sudah Dikirim</span>'
+                        : `<button class="btn btn-success" onclick="sendWa(${index})"> Kirim WA </button>`
+                    }
                   </td>
                 </tr>
               `;
@@ -285,6 +285,26 @@
         const url = `https://wa.me/${no_whatsapps}?text=${encodeURIComponent(message)}`;
 
         window.open(url, "_blank");
+
+        const formData = new FormData();
+
+        formData.append("action", "updateStatusWa");
+        formData.append("id", person.id);
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("Update status:", data);
+
+            person.status_wa = "1";
+            renderTable(currentData);
+          });
       }
     </script>
   </body>
