@@ -153,6 +153,7 @@
       <p id="message"></p>
 
       <a href="views/list_name.html" class="btn-list"> Daftar Undangan </a>
+      <a href="views/message.html" class="btn-list"> Pesan whatsapp </a>
     </div>
     <script>
       document
@@ -183,7 +184,6 @@
           )
             .then((res) => res.text())
             .then((data) => {
-              console.log(data);
               document.getElementById("message").innerHTML =
                 "Data berhasil disimpan";
               document.getElementById("myForm").reset();
