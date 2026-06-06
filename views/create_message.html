@@ -1,0 +1,356 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Create Message</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .btn {
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+      }
+
+      .btn-primary {
+        background: #0d6efd;
+      }
+      .btn-warning {
+        background: orange;
+      }
+
+      .preview-box {
+        background: #e5ddd5;
+        padding: 15px;
+        border-radius: 10px;
+        min-height: 500px;
+      }
+
+      .wa-message {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        white-space: pre-line;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* loading */
+      .loading-overlay {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+
+        justify-content: center;
+        align-items: center;
+      }
+
+      .loading-box {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        min-width: 220px;
+      }
+
+      .spinner {
+        width: 45px;
+        height: 45px;
+        margin: auto;
+        border: 5px solid #ddd;
+        border-top: 5px solid #25d366;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-box p {
+        margin-top: 15px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h2>Buar template pesan</h2>
+
+        <input type="hidden" id="id" value="0" />
+
+        <div class="form-group">
+          <label>Nama Template</label>
+          <input type="text" id="title" />
+        </div>
+        <div class="form-group">
+          <label>Pengirim</label>
+          <input type="text" id="from" />
+        </div>
+
+        <div class="form-group">
+          <label>Sapaan</label>
+          <textarea id="greeting"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Pembuka</label>
+          <textarea id="opening"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Detail</label>
+          <textarea id="detail"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Harapan</label>
+          <textarea id="hope"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Penutup</label>
+          <textarea id="closing"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Link Undangan</label>
+          <input type="text" id="link" />
+        </div>
+
+        <div class="form-group">
+          <label>Salam</label>
+          <input type="text" id="best_regards" />
+        </div>
+
+        <div class="form-group">
+          <label>Pembuat pesan</label>
+          <input type="text" id="createdBy" value="sayang" />
+        </div>
+
+        <button class="btn btn-primary" onclick="saveData()">Save</button>
+
+        <a href="message.html">
+          <button class="btn btn-warning">Kembali</button>
+        </a>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="card">
+        <h2 id="previewTitle">Preview WhatsApp</h2>
+
+        <div class="preview-box">
+          <div class="wa-message" id="previewMessage">
+            Preview pesan akan tampil di sini...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p id="loadingText"></p>
+      </div>
+    </div>
+
+    <script>
+      const fields = [
+        "title",
+        "greeting",
+        "opening",
+        "from",
+        "detail",
+        "hope",
+        "closing",
+        "link",
+        "best_regards",
+      ];
+
+      fields.forEach((id) => {
+        document.getElementById(id).addEventListener("input", updatePreview);
+      });
+
+      function showLoading(text = "Loading...") {
+        document.getElementById("loadingText").innerText = text;
+        document.getElementById("loadingOverlay").style.display = "flex";
+      }
+
+      function hideLoading() {
+        document.getElementById("loadingOverlay").style.display = "none";
+      }
+
+      function updatePreview() {
+        const greeting = document.getElementById("greeting").value;
+
+        const opening = document.getElementById("opening").value;
+
+        const from = document.getElementById("from").value;
+
+        const detail = document.getElementById("detail").value;
+
+        const hope = document.getElementById("hope").value;
+
+        const closing = document.getElementById("closing").value;
+
+        const link = document.getElementById("link").value;
+
+        const bestRegards = document.getElementById("best_regards").value;
+
+        document.getElementById("previewMessage").innerText = `${greeting}
+
+      Kepada Yth.
+      Bapak/Ibu/Saudara/i
+
+      [NAMA TAMU]
+
+      ${opening}
+      ${from}
+
+      ${detail}
+
+      ${link}
+
+      ${hope}
+
+      ${closing}
+
+      ${bestRegards}
+      ${from}`;
+
+        const title = document.getElementById("title").value;
+
+        document.getElementById("previewTitle").innerText = title
+          ? `Preview WhatsApp - ${title}`
+          : "Preview WhatsApp";
+      }
+
+      function saveData() {
+        showLoading("Loading");
+        const formData = new FormData();
+
+        formData.append("greeting", document.getElementById("greeting").value);
+
+        formData.append("opening", document.getElementById("opening").value);
+
+        formData.append("from", document.getElementById("from").value);
+
+        formData.append("detail", document.getElementById("detail").value);
+
+        formData.append("hope", document.getElementById("hope").value);
+
+        formData.append("closing", document.getElementById("closing").value);
+
+        formData.append("link", document.getElementById("link").value);
+
+        formData.append(
+          "best_regards",
+          document.getElementById("best_regards").value,
+        );
+
+        formData.append("is_active", "0");
+        formData.append("tittle", document.getElementById("title").value);
+        formData.append(
+          "created_by",
+          document.getElementById("createdBy").value,
+        );
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=createMessage",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((ress) => ress.json())
+          .then((data) => {
+            hideLoading();
+            if (data.status === "success") {
+              alert("Template pesan berhasil disimpan!");
+              location.href = "message.html";
+            } else {
+              alert("Gagal menyimpan data");
+            }
+          })
+          .catch((error) => {
+            hideLoading();
+            console.log("error: ", error);
+          });
+      }
+
+      updatePreview();
+    </script>
+  </body>
+</html>
