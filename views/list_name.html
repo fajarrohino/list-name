@@ -3,7 +3,15 @@
   <head>
     <title>Daftar Undangan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
     <style>
       * {
         margin: 0;
@@ -47,6 +55,113 @@
         border-radius: 8px;
       }
 
+      .action-menu {
+        position: relative;
+      }
+
+      .menu-btn {
+        width: 34px;
+        height: 34px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .menu-btn:hover {
+        background: #f3f4f6;
+      }
+
+      .menu-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 40px;
+
+        min-width: 180px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+        z-index: 999;
+        overflow: hidden;
+      }
+
+      .menu-dropdown.show {
+        display: block;
+      }
+
+      .menu-item {
+        width: 100%;
+        border: none;
+        background: white;
+        padding: 12px 15px;
+        text-align: left;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .menu-item:hover {
+        background: #f9fafb;
+      }
+
+      .menu-item.whatsapp {
+        color: #25d366;
+      }
+
+      .menu-item.edit {
+        color: #f59e0b;
+      }
+
+      .menu-item.delete {
+        color: #ef4444;
+      }
+
+      .desktop-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      .icon-btn {
+        width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #f3f4f6;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-btn:hover {
+        background: #e5e7eb;
+      }
+
+      .icon-btn.whatsapp {
+        color: #25d366;
+      }
+
+      .icon-btn.edit {
+        color: #f59e0b;
+      }
+
+      .icon-btn.delete {
+        color: #ef4444;
+      }
+
+      .mobile-actions {
+        display: none;
+      }
+
       .btn {
         padding: 10px 16px;
         border: none;
@@ -75,11 +190,14 @@
 
       .btn-warning {
         background: #fd7e14;
-        color: white;
       }
 
       .btn-warning:hover {
         background: #e96b02;
+      }
+
+      .btn-danger {
+        background: #dc2626;
       }
 
       .table-container {
@@ -114,36 +232,6 @@
       .no-wa-empty {
         color: red;
         font-weight: bold;
-      }
-
-      @media (max-width: 768px) {
-        body {
-          padding: 10px;
-        }
-
-        .container {
-          padding: 15px;
-        }
-
-        .toolbar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        select,
-        .btn {
-          width: 100%;
-        }
-
-        th,
-        td {
-          padding: 10px;
-          font-size: 14px;
-        }
-
-        .btn {
-          text-align: center;
-        }
       }
 
       /* model edit */
@@ -216,6 +304,33 @@
       }
 
       @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        select,
+        .btn {
+          width: 100%;
+        }
+
+        th,
+        td {
+          padding: 10px;
+          font-size: 14px;
+        }
+
+        .btn {
+          text-align: center;
+        }
         .action-buttons {
           flex-direction: column;
           width: 100%;
@@ -229,6 +344,30 @@
 
         td:last-child {
           min-width: 120px;
+        }
+
+        .desktop-actions {
+          display: none;
+        }
+
+        .mobile-actions {
+          display: block;
+        }
+        .menu-dropdown {
+          position: fixed;
+          left: 50%;
+          top: 50%;
+
+          transform: translate(-50%, -50%);
+          width: 250px;
+
+          border-radius: 16px;
+          z-index: 99999;
+        }
+
+        .menu-item {
+          padding: 15px;
+          font-size: 15px;
         }
       }
 
@@ -336,6 +475,25 @@
       </div>
     </div>
 
+    <!-- Modal Hapus -->
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <h3>⚠️ Hapus Undangan</h3>
+
+        <p id="deleteMessage">Yakin ingin menghapus data ini?</p>
+
+        <div class="modal-footer">
+          <button class="btn btn-danger" onclick="deleteConfirm()">
+            Hapus
+          </button>
+
+          <button class="btn btn-warning" onclick="closeDeleteModal()">
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- loading -->
     <div id="loadingOverlay" class="loading-overlay">
       <div class="loading-box">
@@ -415,19 +573,62 @@
                     ${
                       item.status_wa == 1
                         ? '<span style="color:green;font-weight:bold">✓ Sudah Dikirim</span>'
-                        : `<div class="action-buttons">
+                        : `<div class="desktop-actions">
+
+                            <button
+                              class="icon-btn whatsapp"
+                              onclick="sendWa(${index})">
+                              <i class="fab fa-whatsapp"></i>
+                            </button>
+
+                            <button
+                              class="icon-btn edit"
+                              onclick="editData(${index})">
+                              <i class="fas fa-pen"></i>
+                            </button>
+
+                            <button
+                              class="icon-btn delete"
+                              onclick="deleteData(${index})">
+                              <i class="fas fa-trash"></i>
+                            </button>
+
+                          </div>
+
+                          <div class="action-menu mobile-actions">
+
+                            <button
+                              class="menu-btn"
+                              onclick="toggleMenu(event, ${index})">
+                              <i class="fas fa-ellipsis-vertical"></i>
+                            </button>
+
+                            <div class="menu-dropdown" id="menu-${index}">
+
                               <button
-                                class="btn btn-success"
+                                class="menu-item whatsapp"
                                 onclick="sendWa(${index})">
-                                Kirim WA
+                                <i class="fab fa-whatsapp"></i>
+                                Kirim WhatsApp
                               </button>
 
                               <button
-                                class="btn btn-warning"
+                                class="menu-item edit"
                                 onclick="editData(${index})">
-                                Edit
+                                <i class="fas fa-pen"></i>
+                                Edit Data
                               </button>
+
+                              <button
+                                class="menu-item delete"
+                                onclick="deleteData(${index})">
+                                <i class="fas fa-trash"></i>
+                                Hapus Data
+                              </button>
+
                             </div>
+
+                          </div>
                          `
                     }
                   </td>
@@ -498,18 +699,18 @@
         formData.append("action", "updateStatusWa");
         formData.append("id", person.id);
 
-        fetch(
-          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
-          {
-            method: "POST",
-            body: formData,
-          },
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            person.status_wa = "1";
-            renderTable(currentData);
-          });
+        // fetch(
+        //   "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+        //   {
+        //     method: "POST",
+        //     body: formData,
+        //   },
+        // )
+        //   .then((res) => res.json())
+        //   .then((data) => {
+        //     person.status_wa = "1";
+        //     renderTable(currentData);
+        //   });
       }
 
       function closeModal() {
@@ -524,6 +725,22 @@
       function hideLoading() {
         document.getElementById("loadingOverlay").style.display = "none";
       }
+
+      function toggleMenu(event, index) {
+        event.stopPropagation();
+
+        document.querySelectorAll(".menu-dropdown").forEach((menu) => {
+          menu.classList.remove("show");
+        });
+
+        document.getElementById(`menu-${index}`).classList.toggle("show");
+      }
+
+      document.addEventListener("click", () => {
+        document.querySelectorAll(".menu-dropdown").forEach((menu) => {
+          menu.classList.remove("show");
+        });
+      });
 
       function editData(index) {
         const person = currentData[index];
@@ -580,6 +797,61 @@
 
             alert("Gagal update data");
             console.error(err);
+          });
+      }
+
+      let deleteId = null;
+
+      function deleteData(index) {
+        const person = currentData[index];
+
+        deleteId = person.id;
+
+        document.getElementById("deleteMessage").innerHTML =
+          `Yakin ingin menghapus undangan <b>${person.name}</b>?`;
+
+        document.getElementById("deleteModal").style.display = "flex";
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+
+        deleteId = null;
+      }
+
+      function deleteConfirm(index) {
+        if (!deleteId) return;
+        console.log("data: ", deleteId);
+        showLoading("Menghapus data...");
+
+        const formData = new FormData();
+
+        formData.append("action", "deleteGuest");
+        formData.append("id", deleteId);
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "success") {
+              closeDeleteModal();
+              alert(data.message);
+              location.reload();
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Terjadi kesalahan");
+          })
+          .finally(() => {
+            hideLoading();
           });
       }
     </script>
