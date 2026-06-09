@@ -365,6 +365,11 @@
           .then(([guestData, messageData]) => {
             allData = guestData;
             currentData = guestData;
+
+            if (messageData.status == "failed") {
+              alert(`${messageData.message}`);
+              location.href = "message.html";
+            }
             messageTemplate = messageData;
 
             loadCategory(guestData);
@@ -459,27 +464,29 @@
         }
 
         const message = [
-          messageTemplate.greeting,
-          "Bismillahirrahmanirrahim.",
+          messageTemplate.data.greeting,
+          // "Bismillahirrahmanirrahim.",
           "\n",
           "Kepada Yth.",
           "Bapak/Ibu/Saudara/i",
           person.name,
           "\n",
-          messageTemplate.opening,
-          messageTemplate.from,
+          messageTemplate.data.opening,
+          messageTemplate.data.from,
           "\n",
-          `${messageTemplate.detail}\n${messageTemplate.link}`,
+          `${messageTemplate.data.detail}\n${messageTemplate.data.link}`,
           "\n",
-          messageTemplate.hope,
+          messageTemplate.data.hope,
           "\n",
-          messageTemplate.closing,
+          messageTemplate.data.closing,
           "\n",
-          "Wassalamualaikum warahmatullahi wabarakatuh",
+          // "Wassalamualaikum warahmatullahi wabarakatuh",
           "\n",
-          messageTemplate.best_regards,
-          messageTemplate.from,
+          messageTemplate.data.best_regards,
+          messageTemplate.data.from,
         ].join("\n");
+
+        console.log("message: ", message);
 
         const no_whatsapps = person.no_wa.replace(/^0/, "62");
         const url = `https://wa.me/${no_whatsapps}?text=${encodeURIComponent(message)}`;
