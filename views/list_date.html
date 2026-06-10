@@ -324,11 +324,19 @@
       .back-btn {
         width: 40px;
         height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
         border: none;
         border-radius: 10px;
+
         background: #eff6ff;
         color: #2563eb;
-        cursor: pointer;
+
+        text-decoration: none;
+        flex-shrink: 0;
       }
 
       .back-btn:hover {
@@ -503,9 +511,9 @@
     <div class="container">
       <div class="page-header">
         <div class="header-left">
-          <button class="back-btn" onclick="window.location.href = '../'">
-            <i class="fas fa-arrow-left"></i>
-          </button>
+          <!-- <button class="back-btn"> -->
+          <a href="../" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+          <!-- </button> -->
 
           <h2>Daftar Kencan</h2>
         </div>
