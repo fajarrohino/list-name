@@ -12,7 +12,7 @@
     <style>
       body {
         background: #f4f6f9;
-        font-family: "Segoe UI", sans-serif;
+        font-family: Arial, sans-serif;
         padding: 20px;
       }
 
@@ -23,6 +23,42 @@
         border-radius: 16px;
         padding: 24px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .header-left h2 {
+        margin: 0;
+      }
+
+      .add-btn {
+        border: none;
+        background: #2563eb;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .add-btn:hover {
+        background: #1d4ed8;
+      }
+      .add-btn .btn-text {
+        display: inline;
       }
 
       h2 {
@@ -278,6 +314,115 @@
         font-weight: 500;
       }
 
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #2563eb;
+        cursor: pointer;
+      }
+
+      .back-btn:hover {
+        background: #dbeafe;
+      }
+
+      .action-menu {
+        position: relative;
+        display: inline-block;
+      }
+
+      .menu-btn {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        font-size: 18px;
+        color: #6b7280;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 42px;
+        background: #fff;
+        min-width: 180px;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        padding: 8px;
+        z-index: 999;
+      }
+
+      .dropdown-menu.show {
+        display: block;
+      }
+
+      .dropdown-menu button {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 5px;
+        border-radius: 12px;
+        text-align: left;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        font-size: 14px;
+        /* font-weight: 600; */
+      }
+
+      .dropdown-menu button:hover {
+        background: #f8fafc;
+      }
+
+      .menu-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 15px;
+      }
+
+      .menu-date {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      .menu-edit {
+        background: #fff7ed;
+        color: #f97316;
+      }
+
+      .menu-delete {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      .desktop-actions {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .mobile-actions {
+        display: none;
+      }
+
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -285,22 +430,94 @@
       }
 
       @media (max-width: 768px) {
-        th,
-        td {
+        body {
           padding: 10px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        h2 {
+          font-size: 20px;
+        }
+
+        table {
           font-size: 13px;
         }
 
-        .icon-btn {
-          width: 32px;
-          height: 32px;
+        th,
+        td {
+          padding: 10px 8px;
+        }
+
+        .modal-content {
+          width: 95%;
+          padding: 18px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          font-size: 16px;
+        }
+        .desktop-actions {
+          display: none;
+        }
+
+        .mobile-actions {
+          display: block;
+        }
+
+        .add-btn {
+          position: fixed;
+          right: 20px;
+          bottom: 20px;
+
+          width: 56px;
+          height: 56px;
+          padding: 0;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 50%;
+          z-index: 999;
+
+          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .add-btn .btn-text {
+          display: none;
+        }
+
+        .add-btn i {
+          margin: 0;
+          font-size: 20px;
+          line-height: 1;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>Daftar Kencan</h2>
+      <div class="page-header">
+        <div class="header-left">
+          <button class="back-btn" onclick="window.location.href = '/'">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+
+          <h2>Daftar Kencan</h2>
+        </div>
+
+        <button
+          class="add-btn"
+          onclick="window.location.href = 'create_date.html'"
+        >
+          <i class="fas fa-plus"></i>
+          <span class="btn-text">Tambah Kencan</span>
+        </button>
+      </div>
 
       <div class="table-container">
         <table>
@@ -331,15 +548,6 @@
           <input type="date" id="dateValue" />
         </div>
 
-        <div class="form-group">
-          <label>Catatan</label>
-          <textarea
-            id="dateNote"
-            placeholder="Contoh: Makan malam di restoran favorit"
-          >
-          </textarea>
-        </div>
-
         <div class="checkbox-group">
           <input type="checkbox" id="dateDone" />
           <label for="dateDone"> Tandai sebagai terlaksana </label>
@@ -366,7 +574,11 @@
 
         <div class="form-group">
           <label>Nama Kencan</label>
-          <input type="text" id="editName" placeholder="Masukkan nama kencan" />
+          <input type="text" id="editName" />
+        </div>
+        <div class="form-group">
+          <label>Note</label>
+          <input type="text" id="editNote" />
         </div>
 
         <div class="modal-footer">
@@ -433,6 +645,7 @@
 
       function renderTable(data) {
         allData = data;
+
         let html = "";
 
         data.forEach((item) => {
@@ -443,7 +656,7 @@
                         <td class="status-column">
                             ${
                               item.is_done == "1"
-                                ? '<span class="badge badge-success">✓ Selesai</span>'
+                                ? '<span class="badge badge-success">Selesai</span>'
                                 : '<span class="badge badge-warning">Belum</span>'
                             }
                         </td>
@@ -457,30 +670,68 @@
                         </td>
 
                         <td>
-                            <div class="action-buttons">
-
+                            <div class="desktop-actions">
                                 <button
                                 class="icon-btn icon-date"
-                                title="Pilih Tanggal"
                                 onclick="editData(${item.id})">
                                 <i class="fas fa-calendar-days"></i>
                                 </button>
 
                                 <button
                                 class="icon-btn icon-edit"
-                                title="Edit Catatan"
                                 onclick="openEditModal(${item.id})">
                                 <i class="fas fa-pen"></i>
                                 </button>
 
                                 <button
                                 class="icon-btn icon-delete"
-                                title="Hapus"
                                 onclick="deleteData(${item.id})">
                                 <i class="fas fa-trash"></i>
                                 </button>
 
-                            </div>  
+                            </div>
+
+
+                            <div class="mobile-actions">
+
+                                <div class="action-menu">
+
+                                    <button
+                                        class="menu-btn"
+                                        onclick="toggleMenu(${item.id})">
+
+                                        <i class="fas fa-ellipsis-vertical"></i>
+
+                                    </button>
+
+                                    <div class="dropdown-menu" id="menu-${item.id}">
+
+                                        <button onclick="editData(${item.id})">
+                                            <div class="menu-icon menu-date">
+                                            <i class="fas fa-calendar-days"></i>
+                                            </div>
+                                            Atur Tanggal
+                                        </button>
+
+                                        <button onclick="openEditModal(${item.id})">
+                                            <div class="menu-icon menu-edit">
+                                            <i class="fas fa-pen"></i>
+                                            </div>
+                                            Edit
+                                        </button>
+
+                                        <button onclick="deleteData(${item.id})">
+                                            <div class="menu-icon menu-delete">
+                                            <i class="fas fa-trash"></i>
+                                            </div>
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </td>
                     </tr>
                     `;
@@ -494,7 +745,6 @@
 
         document.getElementById("dateId").value = item.id;
         document.getElementById("dateValue").value = item.is_date || "";
-        document.getElementById("dateNote").value = item.note || "";
         document.getElementById("dateDone").checked = item.is_done == "1";
 
         document.getElementById("dateModal").style.display = "flex";
@@ -512,15 +762,10 @@
         formData.append("id", document.getElementById("dateId").value);
 
         const date = document.getElementById("dateValue").value;
-        const note = document.getElementById("dateNote").value.trim();
         const isDone = document.getElementById("dateDone").checked ? "1" : "0";
 
         if (date) {
           formData.append("is_date", date);
-        }
-
-        if (note) {
-          formData.append("note", note);
         }
 
         formData.append("is_done", isDone);
@@ -535,9 +780,9 @@
           .then((res) => res.json())
           .then((data) => {
             hideLoading();
+            closeDateModal();
             if (data.status == "success" || data.code == 200) {
               alert("Data berhasil disimpan");
-              closeDateModal();
               loadData();
             } else {
               alert(data.message);
@@ -554,6 +799,8 @@
         const item = allData.find((x) => x.id == id);
 
         document.getElementById("editId").value = item.id;
+
+        document.getElementById("editNote").value = item.note;
         document.getElementById("editName").value = item.name;
 
         document.getElementById("editModal").style.display = "flex";
@@ -564,16 +811,37 @@
       }
 
       function saveEdit() {
-        const data = {
-          id: document.getElementById("editId").value,
-          name: document.getElementById("editName").value,
-        };
+        showLoading("Menyimpan data..");
+        const formData = new FormData();
 
-        console.log(data);
+        formData.append("action", "updateNameDate");
+        formData.append("id", document.getElementById("editId").value);
+        formData.append("name", document.getElementById("editName").value);
+        formData.append("note", document.getElementById("editNote").value);
 
-        closeEditModal();
-
-        // fetch update nama kencan
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw-GeE-k-wSTBJtI860LyeYRVJJIOB56yJNN4OLa46zWx8G4IS31vrXkY4DYYH6h_WLog/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            hideLoading();
+            closeEditModal();
+            if (data.status == "success" || data.code == 200) {
+              alert("Data berhasil disimpan");
+              loadData();
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch((err) => {
+            hideLoading();
+            console.error(err);
+            alert("Gagal menyimpan data");
+          });
       }
 
       function deleteData(id) {
@@ -607,6 +875,24 @@
       function hideLoading() {
         document.getElementById("loading").style.display = "none";
       }
+
+      function toggleMenu(id) {
+        document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+          if (menu.id !== `menu-${id}`) {
+            menu.classList.remove("show");
+          }
+        });
+
+        document.getElementById(`menu-${id}`).classList.toggle("show");
+      }
+
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest(".action-menu")) {
+          document
+            .querySelectorAll(".dropdown-menu")
+            .forEach((menu) => menu.classList.remove("show"));
+        }
+      });
     </script>
   </body>
 </html>
