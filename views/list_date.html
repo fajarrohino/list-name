@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>List Date</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background: #f4f6f9;
+        font-family: "Segoe UI", sans-serif;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #1f2937;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+
+      thead {
+        background: #2563eb;
+        color: white;
+      }
+
+      th {
+        padding: 10px 20px;
+      }
+      td {
+        padding: 0px 20px;
+      }
+
+      th {
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      td {
+        vertical-align: middle;
+      }
+
+      th:nth-child(1) {
+        text-align: left;
+      }
+
+      td:nth-child(1),
+      td:nth-child(4) {
+        text-align: left;
+      }
+
+      td:nth-child(2),
+      td:nth-child(3),
+      td:nth-child(5) {
+        text-align: center;
+      }
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 120px;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 140px;
+      }
+
+      th:nth-child(5),
+      td:nth-child(5) {
+        width: 120px;
+      }
+
+      th:nth-child(4),
+      td:nth-child(4) {
+        width: 150px;
+        max-width: 150px;
+      }
+
+      tbody tr:hover {
+        background: #f8fafc;
+      }
+
+      .badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge-success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .badge-warning {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+      }
+
+      .icon-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .icon-edit {
+        background: #fff7ed;
+        color: #f97316;
+      }
+
+      .icon-delete {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      .icon-date {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .modal-content {
+        width: 90%;
+        max-width: 450px;
+        background: white;
+        padding: 24px;
+        border-radius: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .form-group textarea {
+        resize: none;
+        min-height: 80px;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn-save {
+        background: #2563eb;
+        color: white;
+      }
+
+      .btn-save:hover {
+        background: #1d4ed8;
+      }
+
+      .btn-cancel {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      .btn-cancel:hover {
+        background: #e5e7eb;
+      }
+
+      .loading-box {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 220px;
+        height: 160px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        z-index: 99999;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner {
+        width: 45px;
+        height: 45px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid #2563eb;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .loading-box p {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #374151;
+        font-weight: 500;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        th,
+        td {
+          padding: 10px;
+          font-size: 13px;
+        }
+
+        .icon-btn {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Daftar Kencan</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Kencan</th>
+              <th>Status</th>
+              <th>Tanggal</th>
+              <th>Note</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody id="tblData"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Tanggal -->
+    <div id="dateModal" class="modal">
+      <div class="modal-content">
+        <h3>📅 Jadwalkan Kencan</h3>
+
+        <input type="hidden" id="dateId" />
+
+        <div class="form-group">
+          <label>Tanggal Kencan</label>
+          <input type="date" id="dateValue" />
+        </div>
+
+        <div class="form-group">
+          <label>Catatan</label>
+          <textarea
+            id="dateNote"
+            placeholder="Contoh: Makan malam di restoran favorit"
+          >
+          </textarea>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="dateDone" />
+          <label for="dateDone"> Tandai sebagai terlaksana </label>
+        </div>
+
+        <div class="modal-footer">
+          <button class="icon-btn icon-date" onclick="saveDate()">
+            <i class="fas fa-save"></i>
+          </button>
+
+          <button class="icon-btn btn-cancel" onclick="closeDateModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <h3>✏️ Edit Kencan</h3>
+
+        <input type="hidden" id="editId" />
+
+        <div class="form-group">
+          <label>Nama Kencan</label>
+          <input type="text" id="editName" placeholder="Masukkan nama kencan" />
+        </div>
+
+        <div class="modal-footer">
+          <button class="icon-btn icon-edit" onclick="saveEdit()">
+            <i class="fas fa-save"></i>
+          </button>
+
+          <button class="icon-btn btn-cancel" onclick="closeEditModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Hapus -->
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <h3>Hapus Kencan</h3>
+
+        <p id="deleteText"></p>
+
+        <div class="modal-footer">
+          <button class="icon-btn icon-delete" onclick="confirmDelete()">
+            <i class="fas fa-trash"></i>
+          </button>
+
+          <button class="icon-btn btn-cancel" onclick="closeDeleteModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading" class="loading-box">
+      <div class="spinner"></div>
+      <p>Memuat data...</p>
+    </div>
+    <script>
+      loadData();
+      let allData = [];
+      let deleteId = 0;
+      function loadData() {
+        showLoading();
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw-GeE-k-wSTBJtI860LyeYRVJJIOB56yJNN4OLa46zWx8G4IS31vrXkY4DYYH6h_WLog/exec?action=list_date",
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            hideLoading();
+            if (result.status != "success" || result.code != 200) {
+              alert("Data tidak ditemukan");
+              return;
+            }
+            const data = result.data;
+            console.log("data: ", data);
+            renderTable(result.data);
+          })
+          .catch((err) => {
+            hideLoading();
+            console.error(err);
+            alert("Gagal mengambil data");
+          });
+      }
+
+      function renderTable(data) {
+        allData = data;
+        let html = "";
+
+        data.forEach((item) => {
+          html += `
+                    <tr>
+                        <td>${item.name}</td>
+
+                        <td class="status-column">
+                            ${
+                              item.is_done == "1"
+                                ? '<span class="badge badge-success">✓ Selesai</span>'
+                                : '<span class="badge badge-warning">Belum</span>'
+                            }
+                        </td>
+
+                        <td>
+                            ${item.is_date || "-"}
+                        </td>
+
+                        <td>
+                            ${item.note || "-"}
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+
+                                <button
+                                class="icon-btn icon-date"
+                                title="Pilih Tanggal"
+                                onclick="editData(${item.id})">
+                                <i class="fas fa-calendar-days"></i>
+                                </button>
+
+                                <button
+                                class="icon-btn icon-edit"
+                                title="Edit Catatan"
+                                onclick="openEditModal(${item.id})">
+                                <i class="fas fa-pen"></i>
+                                </button>
+
+                                <button
+                                class="icon-btn icon-delete"
+                                title="Hapus"
+                                onclick="deleteData(${item.id})">
+                                <i class="fas fa-trash"></i>
+                                </button>
+
+                            </div>  
+                        </td>
+                    </tr>
+                    `;
+        });
+
+        document.getElementById("tblData").innerHTML = html;
+      }
+
+      function editData(id) {
+        const item = allData.find((x) => x.id == id);
+
+        document.getElementById("dateId").value = item.id;
+        document.getElementById("dateValue").value = item.is_date || "";
+        document.getElementById("dateNote").value = item.note || "";
+        document.getElementById("dateDone").checked = item.is_done == "1";
+
+        document.getElementById("dateModal").style.display = "flex";
+      }
+
+      function closeDateModal() {
+        document.getElementById("dateModal").style.display = "none";
+      }
+
+      function saveDate() {
+        showLoading("Menyimpan data..");
+        const formData = new FormData();
+
+        formData.append("action", "updateDate");
+        formData.append("id", document.getElementById("dateId").value);
+
+        const date = document.getElementById("dateValue").value;
+        const note = document.getElementById("dateNote").value.trim();
+        const isDone = document.getElementById("dateDone").checked ? "1" : "0";
+
+        if (date) {
+          formData.append("is_date", date);
+        }
+
+        if (note) {
+          formData.append("note", note);
+        }
+
+        formData.append("is_done", isDone);
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw-GeE-k-wSTBJtI860LyeYRVJJIOB56yJNN4OLa46zWx8G4IS31vrXkY4DYYH6h_WLog/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            hideLoading();
+            if (data.status == "success" || data.code == 200) {
+              alert("Data berhasil disimpan");
+              closeDateModal();
+              loadData();
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch((err) => {
+            hideLoading();
+            console.error(err);
+            alert("Gagal menyimpan data");
+          });
+      }
+
+      function openEditModal(id) {
+        const item = allData.find((x) => x.id == id);
+
+        document.getElementById("editId").value = item.id;
+        document.getElementById("editName").value = item.name;
+
+        document.getElementById("editModal").style.display = "flex";
+      }
+
+      function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+      }
+
+      function saveEdit() {
+        const data = {
+          id: document.getElementById("editId").value,
+          name: document.getElementById("editName").value,
+        };
+
+        console.log(data);
+
+        closeEditModal();
+
+        // fetch update nama kencan
+      }
+
+      function deleteData(id) {
+        const item = allData.find((x) => x.id == id);
+
+        deleteId = id;
+
+        document.getElementById("deleteText").innerHTML =
+          `Yakin menghapus kencan <b>${item.name}</b>?`;
+
+        document.getElementById("deleteModal").style.display = "flex";
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+
+      function confirmDelete() {
+        console.log("hapus id:", deleteId);
+
+        closeDeleteModal();
+
+        // fetch delete data
+      }
+
+      function showLoading(text = "Memuat data...") {
+        document.querySelector("#loading p").innerText = text;
+        document.getElementById("loading").style.display = "flex";
+      }
+
+      function hideLoading() {
+        document.getElementById("loading").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
