@@ -513,12 +513,12 @@
         <div class="header-left">
           <a href="../" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
-          <h2>Daftar Kencan</h2>
+          <h2>Dancu</h2>
         </div>
 
         <button class="add-btn" onclick="openCreateModal()">
           <i class="fas fa-plus"></i>
-          <span class="btn-text">Tambah Kencan</span>
+          <span class="btn-text">Tambah Dancu</span>
         </button>
       </div>
 
@@ -526,7 +526,7 @@
         <table>
           <thead>
             <tr>
-              <th>Kencan</th>
+              <th>Dancu</th>
               <th>Status</th>
               <th>Tanggal</th>
               <th>Note</th>
@@ -579,6 +579,7 @@
           <label>Nama Kencan</label>
           <input type="text" id="editName" />
         </div>
+
         <div class="form-group">
           <label>Note</label>
           <input type="text" id="editNote" />
@@ -628,6 +629,16 @@
         <div class="form-group">
           <label>Tanggal Kencan</label>
           <input type="date" id="createDate" required />
+        </div>
+
+        <div class="form-group">
+          <label>Note</label>
+          <input type="text" id="createNote" required />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="createDone" />
+          <label for="createDone"> Tandai sebagai terlaksana </label>
         </div>
 
         <div class="form-group">
@@ -962,6 +973,8 @@
       function openCreateModal() {
         document.getElementById("createName").value = "";
         document.getElementById("createDate").value = "";
+        document.getElementById("createNote").value = "";
+        document.getElementById("createDone").value;
         document.getElementById("createdBy").value = "sayang";
 
         document.getElementById("createModal").style.display = "flex";
@@ -974,6 +987,11 @@
       function saveCreate() {
         const name = document.getElementById("createName").value.trim();
         const date = document.getElementById("createDate").value;
+
+        const note = document.getElementById("createNote").value;
+        const status = document.getElementById("createDone").checked
+          ? "1"
+          : "0";
         const createdBy = document.getElementById("createdBy").value.trim();
 
         if (!name) {
@@ -992,7 +1010,9 @@
 
         formData.append("action", "createDate");
         formData.append("name", name);
+        formData.append("is_done", status);
         formData.append("is_date", date);
+        formData.append("note", note);
         formData.append("created_by", createdBy);
 
         fetch(
