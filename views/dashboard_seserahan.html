@@ -385,10 +385,6 @@
         border-radius: 10px;
       }
 
-      .mobile-item-list {
-        display: none;
-      }
-
       @media (max-width: 768px) {
         body {
           padding: 12px;
@@ -424,51 +420,63 @@
         }
 
         .table-wrapper {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .item-table {
+          min-width: 900px;
+        }
+        .item-table th:nth-child(6),
+        .item-table td:nth-child(6) {
           display: none;
         }
 
-        .mobile-item-list {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .btn-more {
+          width: 36px;
+          height: 36px;
+          border: none;
+          background: none;
+          cursor: pointer;
         }
 
-        .mobile-item {
+        .action-menu {
+          position: fixed;
           background: #fff;
-          border-radius: 16px;
-          padding: 14px;
-          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+          border-radius: 12px;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+          display: none;
+          flex-direction: column;
+          min-width: 140px;
+          z-index: 9999;
         }
 
-        .mobile-item-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
+        .action-menu button {
+          border: none;
+          background: none;
+          text-align: left;
+          padding: 12px;
+          cursor: pointer;
         }
 
-        .mobile-item-title {
-          font-weight: 600;
-          font-size: 15px;
+        .action-menu button:hover {
+          background: #f3f4f6;
         }
+        .item-table {
+          min-width: 550px;
+        }
+      }
+      .btn-more {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 8px;
+      }
 
-        .mobile-item-category {
-          font-size: 13px;
-          color: #6b7280;
-        }
-
-        .mobile-item-detail {
-          font-size: 13px;
-          color: #6b7280;
-          margin-top: 4px;
-        }
-
-        .mobile-item-footer {
-          margin-top: 12px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
+      .btn-more:hover {
+        background: #f3f4f6;
       }
     </style>
   </head>
@@ -565,6 +573,16 @@
       </div>
     </div>
 
+    <div id="actionMenu" class="action-menu">
+      <button onclick="openEditModal(selectedId)">
+        <i class="fas fa-pen"></i> Edit
+      </button>
+
+      <button onclick="deleteItem(selectedId)">
+        <i class="fas fa-trash"></i> Hapus
+      </button>
+    </div>
+
     <!-- Modal-->
 
     <div id="addModal" class="modal">
@@ -606,9 +624,7 @@
 
     <script>
       let allCategories = [];
-      document.addEventListener("DOMContentLoaded", function () {
-        loadData();
-      });
+      loadData();
 
       function loadData() {
         fetch(
@@ -636,106 +652,109 @@
       }
 
       function renderDashboard(categories) {
+        const dashboard = document.getElementById("dashboard");
+
+        if (!dashboard) {
+          console.error("Element #dashboard tidak ditemukan");
+          return;
+        }
         let html = "";
 
         categories.forEach((category) => {
           html += `
-        <div class="category-card">
+                <div class="category-card">
 
-            <div class="category-header">
-                <div>
-                    <h3>
-                      ${getCategoryIcon(category.category_id)}
-                      ${category.category_name}
-                    </h3>
-                    <span>
-                     ${category.total_item} Item •
-                      Rp ${Number(category.budget).toLocaleString("id-ID")}
+                  <div class="category-header">
+                      <div>
+                          <h3>
+                            ${getCategoryIcon(category.category_id)}
+                            ${category.category_name}
+                          </h3>
+                          <span>
+                           ${category.total_item} Item •
+                            Rp ${Number(category.budget).toLocaleString("id-ID")}
+                            </span>
+                      </div>
+
+                      <span class="progress-badge">
+                          ${category.completed}/${category.total_item}
                       </span>
-                </div>
+                  </div>
 
-                <span class="progress-badge">
-                    ${category.completed}/${category.total_item}
-                </span>
-            </div>
-
-            <div class="item-list">
-        `;
+                  <div class="item-list">
+                `;
 
           category.items.forEach((item) => {
             html += `
-            <div class="item ${item.status == 1 ? "completed" : ""}">
+                    <div class="item ${item.status == 1 ? "completed" : ""}">
 
-                <div>
+                      <div>
 
-                    <h4>${item.name}</h4>
+                          <h4>${item.name}</h4>
 
-                    <small>
+                          <small>
 
-                       ${
-                         item.weight
-                           ? item.weight + " gram"
-                           : item.qty + " " + item.unit
-                       }
-                        • Rp ${Number(item.price).toLocaleString("id-ID")}
+                             ${
+                               item.weight
+                                 ? item.weight + " gram"
+                                 : item.qty + " " + item.unit
+                             }
+                              • Rp ${Number(item.price).toLocaleString("id-ID")}
 
-                    </small>
+                          </small>
 
-                </div>
+                      </div>
 
-                <i class="fas ${
-                  item.status == 1 ? "fa-check-circle" : "fa-circle"
-                }"></i>
+                      <i class="fas ${
+                        item.status == 1 ? "fa-check-circle" : "fa-circle"
+                      }"></i>
 
-            </div>
-            `;
+                  </div>
+                  `;
           });
 
           html += `
-            </div>
-        </div>
-        `;
+                  </div>
+              </div>
+              `;
         });
 
-        document.getElementById("dashboard").innerHTML = html;
+        dashboard.innerHTML = html;
       }
 
       function renderSummary(data) {
-        console.log("renderSummary called", new Date());
-        const totalItem = document.getElementById("totalItem");
-        const totalCompleted = document.getElementById("totalCompleted");
-        const totalPending = document.getElementById("totalPending");
-        const totalBudget = document.getElementById("totalBudget");
+        const summary = document.getElementById("summaryContainer");
 
-        if (!totalItem) {
-          console.error("totalItem tidak ditemukan");
+        if (!summary) {
+          console.error("summaryContainer tidak ditemukan");
           return;
         }
 
-        if (!totalCompleted) {
-          console.error("totalCompleted tidak ditemukan");
-          return;
-        }
+        summary.innerHTML = `
+          <div class="card">
+            <i class="fas fa-box"></i>
+            <h3>${data.total_item}</h3>
+            <span>Total Item</span>
+          </div>
 
-        if (!totalPending) {
-          console.error("totalPending tidak ditemukan");
-          return;
-        }
+          <div class="card success">
+            <i class="fas fa-check-circle"></i>
+            <h3>${data.total_completed}</h3>
+            <span>Sudah Dibeli</span>
+          </div>
 
-        if (!totalBudget) {
-          console.error("totalBudget tidak ditemukan");
-          return;
-        }
+          <div class="card warning">
+            <i class="fas fa-clock"></i>
+            <h3>${data.total_pending}</h3>
+            <span>Belum Dibeli</span>
+          </div>
 
-        totalItem.textContent = data.total_item;
-        totalCompleted.textContent = data.total_completed;
-        totalPending.textContent = data.total_pending;
-        totalBudget.textContent =
-          "Rp " + Number(data.total_budget).toLocaleString("id-ID");
-
-        document
-          .querySelectorAll("#summaryContainer .card")
-          .forEach((x) => x.classList.remove("skeleton", "skeleton-card"));
+          <div class="card primary">
+            <i class="fas fa-wallet"></i>
+            <h3>Rp ${Number(data.total_budget).toLocaleString("id-ID")}</h3>
+            <span>Total Budget</span>
+          </div>
+        `;
       }
 
       function getCategoryIcon(categoryId) {
@@ -760,51 +779,39 @@
         categories.forEach((category) => {
           category.items.forEach((item) => {
             html += `
-      <tr>
-        <td>${item.name}</td>
+            <tr>
+              <td>${item.name}</td>
 
-        <td>${category.category_name}</td>
+              <td>${category.category_name}</td>
 
-        <td>
-          ${item.weight ? item.weight + " " + item.unit : item.qty + " " + item.unit}
-        </td>
+              <td>
+                ${item.weight ? item.weight + " " + item.unit : item.qty + " " + item.unit}
+              </td>
 
-        <td>
-          <span class="badge ${item.status == 1 ? "success" : "pending"}">
-            ${item.status == 1 ? "Dibeli" : "Belum"}
-          </span>
-        </td>
+              <td>
+                <span class="badge ${item.status == 1 ? "success" : "pending"}">
+                  ${item.status == 1 ? "Dibeli" : "Belum"}
+                </span>
+              </td>
 
-        <td>
-          Rp ${Number(item.price).toLocaleString("id-ID")}
-        </td>
+              <td>
+                Rp ${Number(item.price).toLocaleString("id-ID")}
+              </td>
 
-        <td>${item.note || "-"}</td>
+              <td>${item.note || "-"}</td>
 
-        <td>
-          <div class="action-group">
+              <td>
+                <button
+                  class="btn-more"
+                  onclick="showActionMenu(event, ${item.id})">
 
-            <button
-              class="btn-icon btn-edit"
-              onclick="openEditModal(${item.id})">
+                  <i class="fas fa-ellipsis-vertical"></i>
 
-              <i class="fas fa-pen"></i>
+                </button>
+              </td>
 
-            </button>
-
-            <button
-              class="btn-icon btn-delete"
-              onclick="deleteItem(${item.id})">
-
-              <i class="fas fa-trash"></i>
-
-            </button>
-
-          </div>
-        </td>
-
-      </tr>
-      `;
+            </tr>
+            `;
           });
         });
 
@@ -824,11 +831,11 @@
 
         categories.forEach((category) => {
           html += `
-                  <option value="${category.category_id}">
-                    ${getCategoryIcon(category.category_id)}
-                    ${category.category_name}
-                  </option>
-                `;
+                        <option value="${category.category_id}">
+                          ${getCategoryIcon(category.category_id)}
+                          ${category.category_name}
+                        </option>
+                      `;
         });
 
         document.getElementById("filterCategory").innerHTML = html;
@@ -888,6 +895,30 @@
       function closeEditModal() {
         document.getElementById("eidtModal").style.display = "none";
       }
+
+      let selectedId = 0;
+
+      function showActionMenu(event, id) {
+        event.stopPropagation();
+
+        selectedId = id;
+
+        const menu = document.getElementById("actionMenu");
+
+        menu.style.display = "flex";
+
+        menu.style.left = event.clientX - 120 + "px";
+        menu.style.top = event.clientY + 10 + "px";
+      }
+
+      document.addEventListener("click", function (e) {
+        if (
+          !e.target.closest(".btn-more") &&
+          !e.target.closest("#actionMenu")
+        ) {
+          document.getElementById("actionMenu").style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>
