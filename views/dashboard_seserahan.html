@@ -644,12 +644,92 @@
 
     <div id="addModal" class="modal">
       <div class="modal-content">
-        <h3>Open Add Item</h3>
-        <p>Sayang kena tipu🤪</p>
+        <h3>Tambah Seserahan</h3>
 
-        <div class="modal-footer">
-          <button class="btn-cancel" onclick="closeAddModal()">Batal</button>
-        </div>
+        <form id="addForm">
+          <!-- Nama -->
+          <div class="form-group">
+            <label>Nama</label>
+            <input type="text" id="addName" required />
+          </div>
+
+          <!-- Kategori -->
+          <div class="form-group">
+            <label>Kategori</label>
+            <select
+              id="addCategory"
+              required
+              onchange="handleCategoryChange()"
+            ></select>
+          </div>
+
+          <!-- Qty -->
+          <div class="form-group">
+            <label>Qty</label>
+            <input type="number" id="addQty" value="1" min="1" />
+          </div>
+
+          <!-- UNIT -->
+          <div class="form-group">
+            <label>Satuan</label>
+            <select id="addUnit">
+              <option value="pcs">pcs</option>
+              <option value="set">set</option>
+              <option value="paket">paket</option>
+              <option value="ml">ml</option>
+            </select>
+          </div>
+
+          <!-- KHUSUS PERHIASAN -->
+          <div id="jewelryFields" style="display: none">
+            <div class="form-group">
+              <label>Berat (gram)</label>
+              <input type="number" id="addWeight" />
+            </div>
+
+            <div class="form-group">
+              <label>Kadar</label>
+              <select id="addKadar">
+                <option value="24K">24K</option>
+                <option value="22K">22K</option>
+                <option value="18K">18K</option>
+                <option value="17K">17K</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Harga -->
+          <div class="form-group">
+            <label>Harga</label>
+            <input type="number" id="addPrice" required />
+          </div>
+
+          <!-- Catatan -->
+          <div class="form-group">
+            <label>Catatan</label>
+            <textarea id="addNote"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Satuan</label>
+            <select id="addStatus">
+              <option value="0">Belum</option>
+              <option value="1">Dibeli</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Pembuat</label>
+            <input id="addCreatedBy" value="sayang" required />
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeAddModal()">
+              Batal
+            </button>
+            <button type="submit" class="btn-save">Simpan</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -691,7 +771,6 @@
       loadData();
 
       function loadData() {
-        // showLoading("Loading");
         fetch(
           "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=seserahan",
         )
@@ -713,6 +792,7 @@
             renderItems(allCategories);
 
             loadCategoryFilter(allCategories);
+            fillAddCategory(allCategories);
           })
           .finally(() => {
             // hideLoading();
@@ -1010,14 +1090,107 @@
       }
 
       function openAddModal() {
-        console.log("Open Add Item");
-
         document.getElementById("addModal").style.display = "flex";
+
+        document.getElementById("addForm").reset();
+        document.getElementById("jewelryFields").style.display = "none";
       }
 
       function closeAddModal() {
         document.getElementById("addModal").style.display = "none";
       }
+
+      function fillAddCategory(categories) {
+        const select = document.getElementById("addCategory");
+
+        let html = "";
+
+        categories.forEach((c) => {
+          html += `
+            <option value="${c.category_id}">
+              ${getCategoryIcon(c.category_id)} ${c.category_name}
+            </option>
+          `;
+        });
+
+        select.innerHTML = html;
+      }
+
+      function handleCategoryChange() {
+        const categoryId = document.getElementById("addCategory").value;
+        const jewelryFields = document.getElementById("jewelryFields");
+
+        // category 2 = Perhiasan
+        if (String(categoryId) === "2") {
+          jewelryFields.style.display = "block";
+        } else {
+          jewelryFields.style.display = "none";
+        }
+      }
+
+      document
+        .getElementById("addForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          showLoading("Menyimpan item...");
+
+          const formData = new FormData();
+
+          const name = document.getElementById("addName").value;
+          const category_id = document.getElementById("addCategory").value;
+          const qty = document.getElementById("addQty").value;
+          const unit = document.getElementById("addUnit").value;
+          const price = document.getElementById("addPrice").value;
+          const note = document.getElementById("addNote").value;
+
+          let weight = "";
+          let content = "";
+
+          if (String(category_id) != "2") {
+            weight = "";
+            content = "";
+          } else {
+            weight = document.getElementById("addWeight").value;
+            content = document.getElementById("addKadar").value;
+          }
+          const status = document.getElementById("addStatus").value;
+          const created_by = document.getElementById("addCreatedBy").value;
+
+          formData.append("action", "addItem");
+          formData.append("id_category", category_id);
+          formData.append("name", name);
+          formData.append("qty", qty);
+          formData.append("unit", unit);
+          formData.append("price", price);
+          formData.append("status", status);
+          formData.append("note", note);
+          formData.append("weight", weight);
+          formData.append("content", content);
+          formData.append("created_by", created_by);
+
+          console.log(formData);
+
+          fetch(
+            "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+            {
+              method: "POST",
+              body: formData,
+            },
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "success") {
+                closeAddModal();
+                alert("Seserahan berhasil ditambahkan!");
+                location.reload();
+              } else {
+                alert(data.message);
+              }
+            })
+            .catch(() => alert("Terjadi kesalahan"))
+            .finally(() => hideLoading());
+        });
 
       let editId = 0;
 
