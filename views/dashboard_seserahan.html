@@ -344,6 +344,9 @@
         padding: 24px;
         border-radius: 16px;
       }
+      .modal-content h3 {
+        margin-bottom: 15px;
+      }
 
       .form-group {
         margin-bottom: 15px;
@@ -432,51 +435,115 @@
           display: none;
         }
 
-        .btn-more {
-          width: 36px;
-          height: 36px;
-          border: none;
-          background: none;
-          cursor: pointer;
-        }
-
-        .action-menu {
-          position: fixed;
-          background: #fff;
-          border-radius: 12px;
-          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-          display: none;
-          flex-direction: column;
-          min-width: 140px;
-          z-index: 9999;
-        }
-
-        .action-menu button {
-          border: none;
-          background: none;
-          text-align: left;
-          padding: 12px;
-          cursor: pointer;
-        }
-
-        .action-menu button:hover {
-          background: #f3f4f6;
-        }
         .item-table {
           min-width: 550px;
         }
-      }
-      .btn-more {
-        width: 36px;
-        height: 36px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        border-radius: 8px;
+
+        .desktop-actions {
+          display: none !important;
+        }
+
+        .mobile-actions {
+          display: block !important;
+        }
       }
 
-      .btn-more:hover {
+      .action-dropdown {
+        position: relative;
+      }
+
+      .action-dropdown summary {
+        list-style: none;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-dropdown summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: 40px;
+
+        min-width: 140px;
+
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+        z-index: 999;
+      }
+
+      .dropdown-menu button {
+        width: 100%;
+        border: none;
+        background: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .dropdown-menu button .fa-pen {
+        color: #f97316;
+      }
+
+      .dropdown-menu button .fa-trash {
+        color: #dc2626;
+      }
+
+      .dropdown-menu button:hover {
         background: #f3f4f6;
+      }
+
+      .desktop-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .mobile-actions {
+        display: none;
+      }
+
+      .global-loading {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      }
+
+      .loading-box {
+        background: white;
+        padding: 20px 28px;
+        border-radius: 14px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .loading-box i {
+        font-size: 28px;
+        color: #2563eb;
+        margin-bottom: 10px;
+      }
+
+      .hidden {
+        display: none;
       }
     </style>
   </head>
@@ -573,16 +640,6 @@
       </div>
     </div>
 
-    <div id="actionMenu" class="action-menu">
-      <button onclick="openEditModal(selectedId)">
-        <i class="fas fa-pen"></i> Edit
-      </button>
-
-      <button onclick="deleteItem(selectedId)">
-        <i class="fas fa-trash"></i> Hapus
-      </button>
-    </div>
-
     <!-- Modal-->
 
     <div id="addModal" class="modal">
@@ -622,11 +679,19 @@
       </div>
     </div>
 
+    <div id="globalLoading" class="global-loading hidden">
+      <div class="loading-box">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading...</p>
+      </div>
+    </div>
+
     <script>
       let allCategories = [];
       loadData();
 
       function loadData() {
+        // showLoading("Loading");
         fetch(
           "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec?action=seserahan",
         )
@@ -648,6 +713,9 @@
             renderItems(allCategories);
 
             loadCategoryFilter(allCategories);
+          })
+          .finally(() => {
+            // hideLoading();
           });
       }
 
@@ -801,13 +869,39 @@
               <td>${item.note || "-"}</td>
 
               <td>
-                <button
-                  class="btn-more"
-                  onclick="showActionMenu(event, ${item.id})">
+                <!-- Desktop -->
+                <div class="desktop-actions">
+                  <button
+                    class="btn-icon btn-edit"
+                    onclick="openEditModal(${item.id})">
+                    <i class="fas fa-pen"></i>
+                  </button>
 
-                  <i class="fas fa-ellipsis-vertical"></i>
+                  <button
+                    class="btn-icon btn-delete"
+                    onclick="deleteItem(${item.id})">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
 
-                </button>
+                <!-- Mobile -->
+                <details class="mobile-actions action-dropdown">
+                  <summary>
+                    <i class="fas fa-ellipsis-vertical"></i>
+                  </summary>
+
+                  <div class="dropdown-menu">
+                    <button onclick="openEditModal(${item.id})">
+                      <i class="fas fa-pen"></i>
+                      Edit
+                    </button>
+
+                    <button onclick="deleteItem(${item.id}, '${item.name}')">
+                      <i class="fas fa-trash"></i>
+                      Hapus
+                    </button>
+                  </div>
+                </details>
               </td>
 
             </tr>
@@ -859,18 +953,60 @@
       let deleteId = 0;
 
       function deleteItem(id) {
-        deleteId = id;
+        const selectedItem = allCategories
+          .flatMap((category) => category.items)
+          .find((item) => item.id == id);
 
-        console.log(id);
+        if (!selectedItem) return;
+        deleteId = selectedItem.id;
 
-        document.getElementById("deleteText").innerText =
-          "Yakin ingin menghapus item ini?";
+        document.getElementById("deleteText").innerHTML =
+          `Yakin ingin menghapus <b>${selectedItem.name}</b> ?`;
 
         document.getElementById("deleteModal").style.display = "flex";
       }
 
       function closeDeleteModal() {
         document.getElementById("deleteModal").style.display = "none";
+      }
+
+      function confirmDelete(index) {
+        console.log("Id: ", deleteId);
+        if (!deleteId) {
+          alert("Tidak bisa dihapus");
+        }
+
+        showLoading("Menghapus item...");
+
+        const formData = new FormData();
+
+        formData.append("action", "deleteItem");
+        formData.append("id", deleteId);
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+          {
+            method: "POST",
+            body: formData,
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "success") {
+              closeDeleteModal();
+              alert(data.message);
+              location.reload();
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Terjadi kesalahan");
+          })
+          .finally(() => {
+            hideLoading();
+          });
       }
 
       function openAddModal() {
@@ -896,29 +1032,15 @@
         document.getElementById("eidtModal").style.display = "none";
       }
 
-      let selectedId = 0;
-
-      function showActionMenu(event, id) {
-        event.stopPropagation();
-
-        selectedId = id;
-
-        const menu = document.getElementById("actionMenu");
-
-        menu.style.display = "flex";
-
-        menu.style.left = event.clientX - 120 + "px";
-        menu.style.top = event.clientY + 10 + "px";
+      function showLoading(text = "Loading...") {
+        const loader = document.getElementById("globalLoading");
+        loader.querySelector("p").innerText = text;
+        loader.classList.remove("hidden");
       }
 
-      document.addEventListener("click", function (e) {
-        if (
-          !e.target.closest(".btn-more") &&
-          !e.target.closest("#actionMenu")
-        ) {
-          document.getElementById("actionMenu").style.display = "none";
-        }
-      });
+      function hideLoading() {
+        document.getElementById("globalLoading").classList.add("hidden");
+      }
     </script>
   </body>
 </html>
