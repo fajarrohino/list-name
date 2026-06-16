@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manajemen Seserahan</title>
+    <title>Manajemen Dancu</title>
 
     <link
       rel="stylesheet"
@@ -338,11 +338,24 @@
       }
 
       .modal-content {
-        width: 90%;
+        /* width: 90%;
         max-width: 500px;
         background: #fff;
         padding: 24px;
+        border-radius: 16px; */
+
+        width: 100%;
+        max-width: 500px;
+
+        background: #fff;
         border-radius: 16px;
+
+        padding: 24px;
+
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+
+        scrollbar-width: thin;
       }
       .modal-content h3 {
         margin-bottom: 15px;
@@ -445,6 +458,20 @@
 
         .mobile-actions {
           display: block !important;
+        }
+
+        .modal {
+          padding: 0;
+          align-items: flex-end;
+        }
+
+        .modal-content {
+          width: 100%;
+          max-width: none;
+
+          border-radius: 20px 20px 0 0;
+
+          max-height: 95vh;
         }
       }
 
@@ -552,8 +579,8 @@
       <div class="header">
         <div>
           <a href="../" class="back-btn" style="text-decoration: none">
-            <h1>🎁 Dashboard Seserahan</h1>
-            <p>Pantau progres persiapan seserahan</p>
+            <h1>🎁 Dashboard Dancu</h1>
+            <p>Pantau progres persiapan Dancu</p>
           </a>
         </div>
 
@@ -605,9 +632,9 @@
 
       <div class="section-header">
         <div class="section-title">
-          <h2>📋 Detail Seserahan</h2>
+          <h2>📋 Detail Dancu</h2>
           <p>
-            Kelola seluruh item seserahan, pantau status pembelian, dan estimasi
+            Kelola seluruh item Dancu, pantau status pembelian, dan estimasi
             anggaran.
           </p>
         </div>
@@ -644,7 +671,7 @@
 
     <div id="addModal" class="modal">
       <div class="modal-content">
-        <h3>Tambah Seserahan</h3>
+        <h3>🎁 Tambah Dancu</h3>
 
         <form id="addForm">
           <!-- Nama -->
@@ -711,7 +738,7 @@
           </div>
 
           <div class="form-group">
-            <label>Satuan</label>
+            <label>Status</label>
             <select id="addStatus">
               <option value="0">Belum</option>
               <option value="1">Dibeli</option>
@@ -724,30 +751,112 @@
           </div>
 
           <div class="modal-footer">
+            <button type="submit" class="btn-save">Simpan</button>
             <button type="button" class="btn-cancel" onclick="closeAddModal()">
               Batal
             </button>
-            <button type="submit" class="btn-save">Simpan</button>
           </div>
         </form>
       </div>
     </div>
 
+    <!-- edit modal -->
     <div id="eidtModal" class="modal">
       <div class="modal-content">
-        <h3>Edit Seserahan</h3>
+        <h3>🎁 Edit Dancu</h3>
 
-        <p>Sayang kena tipu🤪</p>
+        <form id="editForm">
+          <input type="hidden" id="editId" />
 
-        <div class="modal-footer">
-          <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
-        </div>
+          <!-- Nama -->
+          <div class="form-group">
+            <label>Nama</label>
+            <input type="text" id="editName" required />
+          </div>
+
+          <!-- Kategori -->
+          <div class="form-group">
+            <label>Kategori</label>
+            <select
+              id="editCategory"
+              required
+              onchange="handleEditCategoryChange()"
+            ></select>
+          </div>
+
+          <!-- Qty -->
+          <div class="form-group">
+            <label>Qty</label>
+            <input type="number" id="editQty" value="1" min="1" />
+          </div>
+
+          <!-- UNIT -->
+          <div class="form-group">
+            <label>Satuan</label>
+            <select id="editUnit">
+              <option value="pcs">pcs</option>
+              <option value="set">set</option>
+              <option value="paket">paket</option>
+              <option value="ml">ml</option>
+            </select>
+          </div>
+
+          <!-- KHUSUS PERHIASAN -->
+          <div id="editFields" style="display: none">
+            <div class="form-group">
+              <label>Berat (gram)</label>
+              <input type="number" id="editWeight" />
+            </div>
+
+            <div class="form-group">
+              <label>Kadar</label>
+              <select id="editKadar">
+                <option value="24K">24K</option>
+                <option value="22K">22K</option>
+                <option value="18K">18K</option>
+                <option value="17K">17K</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Harga -->
+          <div class="form-group">
+            <label>Harga</label>
+            <input type="number" id="editPrice" required />
+          </div>
+
+          <!-- Catatan -->
+          <div class="form-group">
+            <label>Catatan</label>
+            <textarea id="editNote"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select id="editStatus">
+              <option value="0">Belum</option>
+              <option value="1">Dibeli</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Pembuat</label>
+            <input id="editCreatedBy" required />
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn-save">Simpan</button>
+            <button type="button" class="btn-cancel" onclick="closeEditModal()">
+              Batal
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
     <div id="deleteModal" class="modal">
       <div class="modal-content">
-        <h3>⚠️ Hapus Seserahan</h3>
+        <h3>⚠️ Hapus Dancu</h3>
 
         <p id="deleteText"></p>
 
@@ -793,6 +902,7 @@
 
             loadCategoryFilter(allCategories);
             fillAddCategory(allCategories);
+            loadEditCategory(allCategories);
           })
           .finally(() => {
             // hideLoading();
@@ -1196,13 +1306,164 @@
 
       function openEditModal(id) {
         editId = id;
-        console.log("Open edit id: ", editId);
+        // console.log("Open edit id: ", editId);
+
+        let item = null;
+        let selectedCategory = null;
+
+        allCategories.forEach((category) => {
+          const items = category.items.find((x) => x.id == id);
+
+          if (items) {
+            item = items;
+            selectedCategory = category;
+          }
+        });
+
+        if (!item) {
+          alert("Data tidak ditemukan!");
+          return;
+        }
+
+        // console.log("data: ", [item, selectedCategory]);
+
+        document.getElementById("editId").value = item.id;
+        document.getElementById("editName").value = item.name;
+        document.getElementById("editCategory").value =
+          selectedCategory.category_id;
+
+        document.getElementById("editQty").value = item.qty;
+        document.getElementById("editUnit").value = item.unit;
+        document.getElementById("editPrice").value = item.price;
+        document.getElementById("editNote").value = item.note || "";
+        document.getElementById("editStatus").value = item.status;
+
+        document.getElementById("editWeight").value = item.weight;
+
+        document.getElementById("editKadar").value = item.content;
+        document.getElementById("editCreatedBy").value = item.created_by;
+
+        // console.log("category_id:", selectedCategory.category_id);
+        // console.log(
+        //   "editCategory:",
+        //   document.getElementById("editCategory").value,
+        // );
+
+        handleEditCategoryChange();
 
         document.getElementById("eidtModal").style.display = "flex";
       }
 
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          showLoading("Mengupdate item...");
+
+          const id = document.getElementById("editId").value;
+
+          const name = document.getElementById("editName").value;
+          const id_category = document.getElementById("editCategory").value;
+          const qty = document.getElementById("editQty").value;
+          const unit = document.getElementById("editUnit").value;
+          const price = document.getElementById("editPrice").value;
+          const note = document.getElementById("editNote").value;
+          const status = document.getElementById("editStatus").value;
+          const created_by = document.getElementById("editCreatedBy").value;
+
+          let weight = "";
+          let content = "";
+
+          if (id_category == "2") {
+            weight = document.getElementById("editWeight").value;
+            content = document.getElementById("editKadar").value;
+          }
+
+          console.log("id: ", id);
+          console.log("name: ", name);
+          console.log("id_category: ", id_category);
+          console.log("qty: ", qty);
+          console.log("unit: ", unit);
+          console.log("price: ", price);
+          console.log("note: ", note);
+          console.log("status: ", status);
+          console.log("weight: ", weight);
+          console.log("content: ", content);
+          console.log("created_by: ", created_by);
+
+          const formData = new FormData();
+          formData.append("action", "updateItem");
+          formData.append("id", id);
+          formData.append("name", name);
+          formData.append("id_category", id_category);
+          formData.append("qty", qty);
+          formData.append("unit", unit);
+          formData.append("price", price);
+          formData.append("note", note);
+          formData.append("status", status);
+          formData.append("weight", weight);
+          formData.append("content", content);
+          formData.append("created_by", created_by);
+
+          fetch(
+            "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
+            {
+              method: "POST",
+              body: formData,
+            },
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "success") {
+                alert("Data berhasil diupdate");
+                closeEditModal();
+                loadData();
+              } else {
+                alert(data.message);
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              alert("Terjadi kesalahan");
+            })
+            .finally(() => {
+              hideLoading();
+            });
+        });
+
       function closeEditModal() {
         document.getElementById("eidtModal").style.display = "none";
+      }
+
+      function handleEditCategoryChange() {
+        const categoryId = document.getElementById("editCategory").value;
+        const editFields = document.getElementById("editFields");
+
+        // console.log("categoryId: ", categoryId);
+        // console.log("editFields: ", editFields);
+
+        // category 2 = Perhiasan
+        if (String(categoryId) === "2") {
+          editFields.style.display = "block";
+        } else {
+          editFields.style.display = "none";
+        }
+      }
+
+      function loadEditCategory(categories) {
+        let html = "";
+
+        categories.forEach((category) => {
+          html += `
+                    <option value="${category.category_id}">
+                      ${getCategoryIcon(category.category_id)}
+                      ${category.category_name}
+                    </option>
+                  `;
+        });
+
+        document.getElementById("editCategory").innerHTML = html;
       }
 
       function showLoading(text = "Loading...") {
