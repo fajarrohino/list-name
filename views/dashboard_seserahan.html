@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manajemen Dancu</title>
+    <title>Manajemen Seserahan</title>
 
     <link
       rel="stylesheet"
@@ -579,8 +579,8 @@
       <div class="header">
         <div>
           <a href="../" class="back-btn" style="text-decoration: none">
-            <h1>🎁 Dashboard Dancu</h1>
-            <p>Pantau progres persiapan Dancu</p>
+            <h1>🎁 Dashboard Seserahan</h1>
+            <p>Pantau progres persiapan Seserahan</p>
           </a>
         </div>
 
@@ -632,9 +632,9 @@
 
       <div class="section-header">
         <div class="section-title">
-          <h2>📋 Detail Dancu</h2>
+          <h2>📋 Detail Seserahan</h2>
           <p>
-            Kelola seluruh item Dancu, pantau status pembelian, dan estimasi
+            Kelola seluruh item Seserahan, pantau status pembelian, dan estimasi
             anggaran.
           </p>
         </div>
@@ -671,7 +671,7 @@
 
     <div id="addModal" class="modal">
       <div class="modal-content">
-        <h3>🎁 Tambah Dancu</h3>
+        <h3>🎁 Tambah Seserahan</h3>
 
         <form id="addForm">
           <!-- Nama -->
@@ -763,7 +763,7 @@
     <!-- edit modal -->
     <div id="eidtModal" class="modal">
       <div class="modal-content">
-        <h3>🎁 Edit Dancu</h3>
+        <h3>🎁 Edit Seserahan</h3>
 
         <form id="editForm">
           <input type="hidden" id="editId" />
@@ -856,7 +856,7 @@
 
     <div id="deleteModal" class="modal">
       <div class="modal-content">
-        <h3>⚠️ Hapus Dancu</h3>
+        <h3>⚠️ Hapus Seserahan</h3>
 
         <p id="deleteText"></p>
 
@@ -1379,18 +1379,6 @@
             weight = document.getElementById("editWeight").value;
             content = document.getElementById("editKadar").value;
           }
-
-          console.log("id: ", id);
-          console.log("name: ", name);
-          console.log("id_category: ", id_category);
-          console.log("qty: ", qty);
-          console.log("unit: ", unit);
-          console.log("price: ", price);
-          console.log("note: ", note);
-          console.log("status: ", status);
-          console.log("weight: ", weight);
-          console.log("content: ", content);
-          console.log("created_by: ", created_by);
 
           const formData = new FormData();
           formData.append("action", "updateItem");
