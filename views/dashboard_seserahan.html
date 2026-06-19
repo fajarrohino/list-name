@@ -744,6 +744,10 @@
             <label>Catatan</label>
             <textarea id="addNote"></textarea>
           </div>
+          <div class="form-group">
+            <label>Link</label>
+            <input type="text" id="addLink" />
+          </div>
 
           <div class="form-group">
             <label>Status</label>
@@ -837,6 +841,10 @@
           <div class="form-group">
             <label>Catatan</label>
             <textarea id="editNote"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Link</label>
+            <input type="text" id="editLink" />
           </div>
 
           <div class="form-group">
@@ -1298,6 +1306,7 @@
           }
           const status = document.getElementById("addStatus").value;
           const created_by = document.getElementById("addCreatedBy").value;
+          const link = document.getElementById("addLink").value;
 
           formData.append("action", "addItem");
           formData.append("id_category", category_id);
@@ -1310,6 +1319,7 @@
           formData.append("weight", weight);
           formData.append("content", content);
           formData.append("created_by", created_by);
+          formData.append("link", link);
 
           console.log(formData);
 
@@ -1374,6 +1384,7 @@
 
         document.getElementById("editKadar").value = item.content;
         document.getElementById("editCreatedBy").value = item.created_by;
+        document.getElementById("editLink").value = item.link;
 
         // console.log("category_id:", selectedCategory.category_id);
         // console.log(
@@ -1403,6 +1414,7 @@
           const note = document.getElementById("editNote").value;
           const status = document.getElementById("editStatus").value;
           const created_by = document.getElementById("editCreatedBy").value;
+          const link = document.getElementById("editLink").value;
 
           let weight = "";
           let content = "";
@@ -1425,6 +1437,7 @@
           formData.append("weight", weight);
           formData.append("content", content);
           formData.append("created_by", created_by);
+          formData.append("link", link);
 
           fetch(
             "https://script.google.com/macros/s/AKfycbw077XQVpvfFv9nr8A-pf7gHpSjfA_Xj9i8yOs28MFa2eq8uIeknkpBc4QKbmKouwWYIQ/exec",
