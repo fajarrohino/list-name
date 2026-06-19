@@ -522,6 +522,14 @@
         cursor: pointer;
         font-size: 14px;
       }
+      .btn-link {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      .dropdown-menu button .fa-link {
+        color: #2563eb;
+      }
 
       .dropdown-menu button .fa-pen {
         color: #f97316;
@@ -1060,7 +1068,19 @@
 
               <td>
                 <!-- Desktop -->
-                <div class="desktop-actions">
+                 <div class="desktop-actions">
+                  ${
+                    item.link
+                      ? `
+                        <button
+                          class="btn-icon btn-link"
+                          onclick="openLink('${item.link}')">
+                          <i class="fas fa-link"></i>
+                        </button>
+                        `
+                      : ""
+                  }
+
                   <button
                     class="btn-icon btn-edit"
                     onclick="openEditModal(${item.id})">
@@ -1081,6 +1101,18 @@
                   </summary>
 
                   <div class="dropdown-menu">
+
+                    ${
+                      item.link
+                        ? `
+                          <button
+                            onclick="openLink('${item.link}')">
+                            <i class="fas fa-link"></i>Link
+                          </button>
+                          `
+                        : ""
+                    }
+
                     <button onclick="openEditModal(${item.id})">
                       <i class="fas fa-pen"></i>
                       Edit
@@ -1462,6 +1494,15 @@
 
       function hideLoading() {
         document.getElementById("globalLoading").classList.add("hidden");
+      }
+
+      function openLink(url) {
+        if (!url) {
+          alert("Link belum tersedia");
+          return;
+        }
+
+        window.open(url, "_blank");
       }
     </script>
   </body>
